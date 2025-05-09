@@ -4,10 +4,13 @@ using UnityEngine.Serialization;
 
 public class GameManager : Singleton<GameManager>
 {
-	[SerializeField] public StoneObject StonePrefab;
-	[SerializeField] public Transform[] LinePositions;
-	[SerializeField] Transform[] PoolPositions;
+	[SerializeField] private int NumberOfDefaultPlayers = 2;
 
+	[SerializeField] private StoneObject StonePrefab;
+
+	[SerializeField] private Transform[] LinePositions;
+	[SerializeField] private Transform[] PoolPositions;
+	
 	[SerializeField] public SelectorWheel Selector;
 
 	private Game m_Game;
@@ -34,7 +37,7 @@ public class GameManager : Singleton<GameManager>
 
 	public void Start()
 	{
-		m_Game = new Game();
+		m_Game = new Game(NumberOfDefaultPlayers);
 		m_LineStoneInstances = new Dictionary<int, StoneObject>(7);
 		for(int i = 0; i < m_Game.Line.Length; i++)
 		{

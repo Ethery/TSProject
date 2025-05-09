@@ -1020,6 +1020,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5753756b21d4b4c41b54b32caec2b3fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  NumberOfDefaultPlayers: 2
   StonePrefab: {fileID: 4633679341723316352, guid: d638e54e65ff236469895ac41de90aea, type: 3}
   LinePositions:
   - {fileID: 2109538653}
@@ -1160,7 +1161,7 @@ MonoBehaviour:
   m_MiddleClickAction: {fileID: 0}
   m_RightClickAction: {fileID: 0}
   m_ScrollWheelAction: {fileID: 0}
-  m_TrackedDevicePositionAction: {fileID: 0}
+  m_TrackedDevicePositionAction: {fileID: -4693644216181909266, guid: 6a5a4067689b63943a2b93f75801ab9b, type: 3}
   m_TrackedDeviceOrientationAction: {fileID: 0}
   m_DeselectOnBackgroundClick: 1
   m_PointerBehavior: 0

@@ -49,16 +49,19 @@ public class Game
 	private readonly Stone[] m_Pool;
 	private readonly int[] m_PlayerPoints;
 	
-	public EGameAction? CurrentRunningAction = null;
-	public int CurrentPlayer = 0;
+	private int m_CurrentPlayer = 0;
+	private readonly int m_NumberOfPlayers;
 
+	public EGameAction? CurrentRunningAction = null;
+	public int CurrentPlayer => m_CurrentPlayer;
 	public Stone[] Line => m_Line;
 	public Stone[] Pool => m_Pool;
 	
 	#endregion
 	
-	public Game()
+	public Game(int aNumberOfPlayers)
 	{
+		m_NumberOfPlayers = aNumberOfPlayers;
 		m_Line = new Stone[(int)EStone.Count];
 		m_Pool = new Stone[(int)EStone.Count];
 
@@ -75,13 +78,18 @@ public class Game
 		
 		m_Line[3] = new Stone((EStone)stoneIdToPlace, false);
 
-		m_PlayerPoints = new[] { 0, 0 };
+		m_PlayerPoints = new int[m_NumberOfPlayers];
 
 		Debug.Log(ToString());
 	}
 	
 	#region Actions
-
+	public void GoToNextPlayer()
+	{
+		CurrentRunningAction = null;
+		m_CurrentPlayer = (CurrentPlayer + 1) % m_NumberOfPlayers;
+	}
+	
 	/// <summary>
 	/// Will place a stone on the line before or after the stones already on it.
 	/// </summary>
