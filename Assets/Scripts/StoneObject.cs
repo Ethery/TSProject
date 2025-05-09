@@ -155,9 +155,11 @@ public class StoneObject : MonoBehaviour
 
 	public IEnumerator WatchCoroutine()
 	{
+		GameManager.Instance.IsWatching = true;
 		GameManager.Instance.Game.FlipStone(Stone.Value);
 		yield return new WaitForSeconds(5f);
 		GameManager.Instance.Game.FlipStone(Stone.Value);
 		GameManager.Instance.Game.WatchStone(Stone.Value);
+		GameManager.Instance.IsWatching = false;
 	}
 }

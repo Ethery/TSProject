@@ -13,6 +13,7 @@ public class GameManager : Singleton<GameManager>
 	
 	[SerializeField] public SelectorWheel Selector;
 
+	public bool IsWatching;
 	private Game m_Game;
 	
 	private Dictionary<int, StoneObject> m_LineStoneInstances;

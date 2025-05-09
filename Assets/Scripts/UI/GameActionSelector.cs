@@ -16,7 +16,7 @@ public class GameActionSelector : MonoBehaviour
 
 	public bool CanBePlayed()
 	{
-		if (GameManager.Instance.IsBoasting)
+		if (GameManager.Instance.IsBoasting || GameManager.Instance.IsWatching) 
 			return false;
 		
 		switch (Action)
