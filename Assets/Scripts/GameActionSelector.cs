@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,6 +16,9 @@ public class GameActionSelector : MonoBehaviour
 
 	public bool CanBePlayed()
 	{
+		if (GameManager.Instance.IsBoasting)
+			return false;
+		
 		switch (Action)
 		{
 			case Game.EGameAction.PlaceStoneBefore:
@@ -52,6 +56,9 @@ public class GameActionSelector : MonoBehaviour
 
 	public void OnButtonClick(bool aIsOn)
 	{
+		if (GameManager.Instance.IsBoasting)
+			return;
+		
 		if (aIsOn)
 		{
 			GameManager.Instance.Game.CurrentRunningAction = Action;
@@ -62,6 +69,13 @@ public class GameActionSelector : MonoBehaviour
 			{
 				GameManager.Instance.Game.CurrentRunningAction = null;
 			}
+		}
+
+		switch (GameManager.Instance.Game.CurrentRunningAction)
+		{
+			case Game.EGameAction.Boast:
+				GameManager.Instance.AskBoast();
+				break;
 		}
 	}
 }

@@ -8,6 +8,12 @@ using static Game;
 [CreateAssetMenu(menuName = "VisualDataSet")]
 public class VisualDataSet : ScriptableObject
 {
+    [Header("Colors")]
+    public Color currentPlayerColor;
+
+    public Color defaultPlayerColor;
+    
+    [Header("Resources")]
     public StoneDataSet<Sprite> Sprites;
     public StoneDataSet<Texture> Textures;
 

@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 434e48ec11ba618468e3d3ba76bee21c, type: 3}
   m_Name: Visual Datas
   m_EditorClassIdentifier: 
+  currentPlayerColor: {r: 0, g: 0.6392157, b: 0.7372549, a: 1}
+  defaultPlayerColor: {r: 0.5990566, g: 1, b: 0.9497591, a: 1}
   Sprites:
     DataList:
     - Stone: 0

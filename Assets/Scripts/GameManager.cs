@@ -125,4 +125,44 @@ public class GameManager : Singleton<GameManager>
 			}
 		}
 	}
+
+	#region Boasting Action
+	
+	public Game.EStone? BoastingStone;
+	public bool IsBoasting = false;
+
+	public List<Game.EStone> BoastedStones;
+	public void AskBoast()
+	{
+		BoastedStones = new List<Game.EStone>();
+		IsBoasting = true;
+		BoastingStone = null;
+		List<Game.EStone> selection =  new List<Game.EStone>();
+		foreach (Game.Stone stone in m_Game.Line)
+		{
+			if (stone != null && !BoastedStones.Contains(stone.Value) && stone.Hidden)
+			{
+				selection.Add(stone.Value);
+			}
+		}
+
+		if (selection.Count <= 0)
+		{
+			m_Game.AddPointsToPlayer(m_Game.CurrentPlayer, 3);
+			IsBoasting = false;
+			BoastingStone = null;
+			BoastedStones = null;
+			return;
+		}
+		
+		Selector.AskForSelection(selection.ToArray(),DoNextBoast);
+	}
+
+	public void DoNextBoast(Game.EStone lastAnswer)
+	{
+		BoastingStone = lastAnswer;
+		Selector.gameObject.SetActive(false);
+	}
+	
+	#endregion
 }

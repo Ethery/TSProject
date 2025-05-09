@@ -99,7 +99,7 @@ public class StoneObject : MonoBehaviour
 					{
 						if (!this.IsFromThePool)
 						{
-							GameManager.Instance.Game.HideStone(Stone.Value);
+							GameManager.Instance.Game.FlipStone(Stone.Value);
 						}
 						break;
 					}
@@ -129,6 +129,19 @@ public class StoneObject : MonoBehaviour
 					GameManager.Instance.Selector.AskForSelection(Game.ALL,Guess);
 					break;
 				case Game.EGameAction.Boast:
+					if (GameManager.Instance.IsBoasting && GameManager.Instance.BoastingStone.HasValue)
+					{
+						GameManager.Instance.Game.ShowStone(Stone.Value);
+						if (GameManager.Instance.BoastingStone == Stone.Value)
+						{
+							GameManager.Instance.BoastedStones.Add(Stone.Value);
+							GameManager.Instance.AskBoast();
+						}
+						else
+						{
+							GameManager.Instance.Game.AddPointsToPlayer((GameManager.Instance.Game.CurrentPlayer+1)%GameManager.Instance.Game.NumberOfPlayers,3);
+						}
+					}
 					break;
 			}
 		}
@@ -136,14 +149,15 @@ public class StoneObject : MonoBehaviour
 
 	private void Guess(Game.EStone aStone)
 	{
-		GameManager.Instance.Game.Defy(0, 1, this.Stone, aStone);
+		GameManager.Instance.Game.Defy(GameManager.Instance.Game.CurrentPlayer, this.Stone, aStone);
 		GameManager.Instance.Selector.gameObject.SetActive(false);
 	}
 
 	public IEnumerator WatchCoroutine()
 	{
-		GameManager.Instance.Game.HideStone(Stone.Value);
+		GameManager.Instance.Game.FlipStone(Stone.Value);
 		yield return new WaitForSeconds(5f);
-		GameManager.Instance.Game.HideStone(Stone.Value);
+		GameManager.Instance.Game.FlipStone(Stone.Value);
+		GameManager.Instance.Game.WatchStone(Stone.Value);
 	}
 }

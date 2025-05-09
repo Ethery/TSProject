@@ -63,7 +63,7 @@ public class SelectorWheel : MonoBehaviour
 			Buttons.Add(button);
 		}
 
-		for (int j = Buttons.Count - 1; j >= i; j++)
+		for (int j = Buttons.Count - 1; j >= i; j--)
 		{
 			Destroy(Buttons[j].gameObject);
 			Buttons.RemoveAt(j);

@@ -53,6 +53,7 @@ public class Game
 	private readonly int m_NumberOfPlayers;
 
 	public EGameAction? CurrentRunningAction = null;
+	public int NumberOfPlayers => m_NumberOfPlayers;
 	public int CurrentPlayer => m_CurrentPlayer;
 	public Stone[] Line => m_Line;
 	public Stone[] Pool => m_Pool;
@@ -128,6 +129,8 @@ public class Game
 				m_Line[i - step] = new Stone(aStoneToPlace, false);
 				Debug.Log($"Placed {aStoneToPlace} {(aBefore ? "before" : "after")} the line");
 				RemoveStoneFromPool(aStoneToPlace);
+				
+				GoToNextPlayer();
 				return;
 			}
 		}
@@ -136,16 +139,32 @@ public class Game
 		Debug.LogError($"Couldn't place {aStoneToPlace} {(aBefore ? "before" : "after")} the line");
 	}
 
-	public void HideStone(int aStoneToHide)
+	public void ShowStone(EStone aStoneToShow)
+	{
+		for(int i = 0;i <m_Line.Length;i++)
+		{
+			if (m_Line[i] == null)
+				continue;
+			
+			if (m_Line[i].Value == aStoneToShow)
+			{
+				m_Line[i].Hidden = false;
+			}
+		}
+	}
+	
+	public void FlipStone(int aStoneToHide)
 	{
 		Assert.IsTrue(0 <= aStoneToHide && aStoneToHide <= m_Line.Length - 1);
 		Assert.IsTrue(m_Line[aStoneToHide] != null);
 		
 		m_Line[aStoneToHide].Hidden = !m_Line[aStoneToHide].Hidden;
 		Debug.Log($"{(m_Line[aStoneToHide].Hidden ? "Hidden" : "Shown")} {m_Line[aStoneToHide].Value}");
+		
+		GoToNextPlayer();
 	}
 
-	public void HideStone(EStone aStoneToHide)
+	public void FlipStone(EStone aStoneToHide)
 	{
 		for(int i = 0;i <m_Line.Length;i++)
 		{
@@ -154,7 +173,7 @@ public class Game
 			
 			if (m_Line[i].Value == aStoneToHide)
 			{
-				HideStone(i);
+				FlipStone(i);
 			}
 		}
 	}
@@ -165,6 +184,8 @@ public class Game
 		Stone stoneTo = m_Line[aIndexTo];
 		m_Line[aIndexTo] = m_Line[aIndexFrom];
 		m_Line[aIndexFrom] = stoneTo;
+		
+		GoToNextPlayer();
 	}
 	
 	public void SwapStones(EStone aStoneFromValue, EStone aStoneToValue)
@@ -172,14 +193,6 @@ public class Game
 		int fromIndex = GetStoneIndexInLine(aStoneFromValue);
 		int toIndex = GetStoneIndexInLine(aStoneToValue);
 		SwapStones(fromIndex,toIndex);
-	}
-
-	public Stone WatchStone(int aIndex)
-	{
-		Assert.IsTrue(0 < aIndex && aIndex < m_Line.Length - 1);
-		Assert.IsTrue(m_Line[aIndex] != null);
-
-		return m_Line[aIndex];
 	}
 
 	public Stone WatchStone(EStone aStoneToSee)
@@ -190,6 +203,7 @@ public class Game
 			{
 				if (m_Line[i].Value == aStoneToSee)
 				{
+					GoToNextPlayer();
 					return m_Line[i];
 				}
 			}
@@ -197,20 +211,21 @@ public class Game
 		return null;
 	}
 
-	public void Defy(int aAskingPlayerId, int aAnsweringPlayerId,Stone aStoneToGuess, EStone aGuess )
+	public void Defy(int aAskingPlayerId,Stone aStoneToGuess, EStone aGuess )
 	{
 		if (aStoneToGuess.Value == aGuess)
 		{
-			AddPointsToPlayer(aAnsweringPlayerId);
+			AddPointsToPlayer((aAskingPlayerId+1)%NumberOfPlayers);
 		}
 		else
 		{
 			AddPointsToPlayer(aAskingPlayerId);
 		}
+		GoToNextPlayer();
 	}
 
 	/// <summary>
-	/// Check a Boast guess.
+	/// Check a BeginBoast guess.
 	/// </summary>
 	/// <param name="aBoastingPlayerId"></param>
 	/// <param name="aGuess">list of the stones ordered.</param>
@@ -301,7 +316,7 @@ public class Game
 		}
 	}
 
-	private void AddPointsToPlayer(int aPlayerIndex,int aPointsToAdd = 1)
+	public void AddPointsToPlayer(int aPlayerIndex,int aPointsToAdd = 1)
 	{
 		m_PlayerPoints[aPlayerIndex] += aPointsToAdd;
 	}
