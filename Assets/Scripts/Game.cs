@@ -153,6 +153,20 @@ public class Game
 		}
 	}
 	
+	public void HideStone(EStone aStoneToHide)
+	{
+		for(int i = 0;i <m_Line.Length;i++)
+		{
+			if (m_Line[i] == null)
+				continue;
+			
+			if (m_Line[i].Value == aStoneToHide)
+			{
+				m_Line[i].Hidden = true;
+			}
+		}
+	}
+	
 	public void FlipStone(int aStoneToHide)
 	{
 		Assert.IsTrue(0 <= aStoneToHide && aStoneToHide <= m_Line.Length - 1);
