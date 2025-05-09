@@ -1,9 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 public class GameActionSelector : MonoBehaviour
@@ -30,7 +25,7 @@ public class GameActionSelector : MonoBehaviour
 				int lineCount = 0;
 				foreach (Game.Stone stone in GameManager.Instance.Game.Line)
 				{
-					if (stone != null && stone.Value != Game.EStone.NONE)
+					if (stone != null && stone.Value != Game.EStone.None)
 						lineCount++;
 				}
 				return lineCount >= 2;
@@ -42,7 +37,12 @@ public class GameActionSelector : MonoBehaviour
 				}
 				return false;
 			case Game.EGameAction.Defy:
-				return true;
+				foreach(Game.Stone stone in GameManager.Instance.Game.Line)
+				{
+					if (stone != null && stone.Hidden)
+						return true;
+				}
+				return false;
 			case Game.EGameAction.Boast:
 				return true;
 			default:
@@ -50,9 +50,9 @@ public class GameActionSelector : MonoBehaviour
 		}
 	}
 
-	public void OnButtonClick(bool isOn)
+	public void OnButtonClick(bool aIsOn)
 	{
-		if (isOn)
+		if (aIsOn)
 		{
 			GameManager.Instance.Game.CurrentRunningAction = Action;
 		}

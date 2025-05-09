@@ -1,125 +1,123 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.Assertions;
+using UnityEngine.Serialization;
 
 public class GameManager : Singleton<GameManager>
 {
-	public StoneObject StonePrefab;
-	public Transform[] LinePositions;
-	public Transform[] PoolPositions;
+	[SerializeField] public StoneObject StonePrefab;
+	[SerializeField] public Transform[] LinePositions;
+	[SerializeField] Transform[] PoolPositions;
 
-	private Dictionary<int, StoneObject> LineStoneInstances;
-	private Dictionary<int, StoneObject> PoolStoneInstances;
+	[SerializeField] public SelectorWheel Selector;
 
-	private List<StoneObject> UnusedStoneInstances = new List<StoneObject>();
+	private Game m_Game;
+	
+	private Dictionary<int, StoneObject> m_LineStoneInstances;
+	private Dictionary<int, StoneObject> m_PoolStoneInstances;
 
-	[SerializeField]
-	public SelectorWheel Selector = null;
-
-	[SerializeField]
-	public Game Game = null;
-
-	[SerializeField]
-	public VisualDatas VisualDatas = null;
+	private List<StoneObject> m_UnusedStoneInstances;
+	
+	public Game Game => m_Game;
 
 	private void OnDrawGizmos()
 	{
-		for (int i = 0; i < LinePositions.Length; i++)
+		foreach (Transform linePosition in LinePositions)
 		{
-			Gizmos.DrawMesh(StonePrefab.GetComponentInChildren<MeshFilter>().sharedMesh, LinePositions[i].position);
+			Gizmos.DrawMesh(StonePrefab.GetComponentInChildren<MeshFilter>().sharedMesh, linePosition.position);
 		}
-		for (int i = 0; i < PoolPositions.Length; i++)
+
+		foreach (Transform linePosition in PoolPositions)
 		{
-			Gizmos.DrawMesh(StonePrefab.GetComponentInChildren<MeshFilter>().sharedMesh, PoolPositions[i].position);
+			Gizmos.DrawMesh(StonePrefab.GetComponentInChildren<MeshFilter>().sharedMesh, linePosition.position);
 		}
 	}
 
 	public void Start()
 	{
-		Game = new Game();
-		LineStoneInstances = new Dictionary<int, StoneObject>(7);
-		for(int i = 0; i < Game.Line.Length; i++)
+		m_Game = new Game();
+		m_LineStoneInstances = new Dictionary<int, StoneObject>(7);
+		for(int i = 0; i < m_Game.Line.Length; i++)
 		{
-			if (Game.GetStoneInLineAt(i) != Game.EStone.NONE)
+			if (m_Game.GetStoneInLineAt(i) != Game.EStone.None)
 			{
 				Transform linePos = LinePositions[i];
 				StoneObject stoneInstance = Instantiate(StonePrefab, linePos);
-				stoneInstance.Stone = Game.Line[i];
-				LineStoneInstances.Add(i, stoneInstance);
+				stoneInstance.Stone = m_Game.Line[i];
+				m_LineStoneInstances.Add(i, stoneInstance);
 			}
 		}
 
-		PoolStoneInstances = new Dictionary<int, StoneObject>(7);
-		for(int i = 0; i < Game.Pool.Length; i++)
+		m_PoolStoneInstances = new Dictionary<int, StoneObject>(7);
+		for(int i = 0; i < m_Game.Pool.Length; i++)
 		{
-			if (Game.GetStoneInPoolAt(i) != Game.EStone.NONE)
+			if (m_Game.GetStoneInPoolAt(i) != Game.EStone.None)
 			{
 				Transform poolPos = PoolPositions[i];
 				StoneObject stoneInstance = Instantiate(StonePrefab, poolPos);
-				stoneInstance.Stone = Game.Pool[i];
+				stoneInstance.Stone = m_Game.Pool[i];
 				stoneInstance.IsFromThePool = true;
-				PoolStoneInstances.Add(i, stoneInstance);
+				m_PoolStoneInstances.Add(i, stoneInstance);
 			}
 		}
 
-		for(int i=0;i<4;i++)
+		m_UnusedStoneInstances = new List<StoneObject>(4);
+		for(int i = 0; i < 4; i++)
 		{
-			UnusedStoneInstances.Add(Instantiate(StonePrefab, transform));
-			UnusedStoneInstances[i].gameObject.SetActive(false);
+			m_UnusedStoneInstances.Add(Instantiate(StonePrefab, transform));
+			m_UnusedStoneInstances[i].gameObject.SetActive(false);
 		}
+		Selector.gameObject.SetActive(false);
 	}
 
 	public void Update()
 	{
-		if (Game != null)
+		if (m_Game != null)
 		{
-			for (int i = 0; i < Game.Line.Length; i++)
+			for (int i = 0; i < m_Game.Line.Length; i++)
 			{
-				if (Game.GetStoneInLineAt(i) == Game.EStone.NONE && LineStoneInstances.ContainsKey(i))
+				if (m_Game.GetStoneInLineAt(i) == Game.EStone.None && m_LineStoneInstances.ContainsKey(i))
 				{
-					UnusedStoneInstances.Add(LineStoneInstances[i]);
-					LineStoneInstances[i].gameObject.SetActive(false);
-					LineStoneInstances[i].transform.SetParent(transform, false);
-					LineStoneInstances.Remove(i);
+					m_UnusedStoneInstances.Add(m_LineStoneInstances[i]);
+					m_LineStoneInstances[i].gameObject.SetActive(false);
+					m_LineStoneInstances[i].transform.SetParent(transform, false);
+					m_LineStoneInstances.Remove(i);
 				}
-				else if (Game.GetStoneInLineAt(i) != Game.EStone.NONE && !LineStoneInstances.ContainsKey(i))
+				else if (m_Game.GetStoneInLineAt(i) != Game.EStone.None && !m_LineStoneInstances.ContainsKey(i))
 				{
-					LineStoneInstances.Add(i, UnusedStoneInstances[0]);
-					UnusedStoneInstances.RemoveAt(0);
-					LineStoneInstances[i].gameObject.SetActive(true);
-					LineStoneInstances[i].transform.SetParent(LinePositions[i], false);
-					LineStoneInstances[i].Stone = Game.Line[i];
+					m_LineStoneInstances.Add(i, m_UnusedStoneInstances[0]);
+					m_UnusedStoneInstances.RemoveAt(0);
+					m_LineStoneInstances[i].gameObject.SetActive(true);
+					m_LineStoneInstances[i].transform.SetParent(LinePositions[i], false);
+					m_LineStoneInstances[i].Stone = m_Game.Line[i];
 				}
-				else if (Game.GetStoneInLineAt(i) != Game.EStone.NONE && LineStoneInstances.ContainsKey(i))
+				else if (m_Game.GetStoneInLineAt(i) != Game.EStone.None && m_LineStoneInstances.ContainsKey(i))
 				{
-					LineStoneInstances[i].Stone = Game.Line[i];
-					LineStoneInstances[i].IsFromThePool = false;
+					m_LineStoneInstances[i].Stone = m_Game.Line[i];
+					m_LineStoneInstances[i].IsFromThePool = false;
 				}
 			}
 
-			for (int i = 0; i < Game.Pool.Length; i++)
+			for (int i = 0; i < m_Game.Pool.Length; i++)
 			{
-				if (Game.GetStoneInPoolAt(i) == Game.EStone.NONE && PoolStoneInstances.ContainsKey(i))
+				if (m_Game.GetStoneInPoolAt(i) == Game.EStone.None && m_PoolStoneInstances.ContainsKey(i))
 				{
-					UnusedStoneInstances.Add(PoolStoneInstances[i]);
-					PoolStoneInstances[i].gameObject.SetActive(false);
-					PoolStoneInstances[i].transform.SetParent(transform, false);
-					PoolStoneInstances.Remove(i);
+					m_UnusedStoneInstances.Add(m_PoolStoneInstances[i]);
+					m_PoolStoneInstances[i].gameObject.SetActive(false);
+					m_PoolStoneInstances[i].transform.SetParent(transform, false);
+					m_PoolStoneInstances.Remove(i);
 				}
-				else if (Game.GetStoneInPoolAt(i) != Game.EStone.NONE && !PoolStoneInstances.ContainsKey(i))
+				else if (m_Game.GetStoneInPoolAt(i) != Game.EStone.None && !m_PoolStoneInstances.ContainsKey(i))
 				{
-					PoolStoneInstances.Add(i, UnusedStoneInstances[0]);
-					UnusedStoneInstances.RemoveAt(0);
-					PoolStoneInstances[i].gameObject.SetActive(true);
-					PoolStoneInstances[i].transform.SetParent(PoolPositions[i], false);
-					PoolStoneInstances[i].Stone = Game.Pool[i];
+					m_PoolStoneInstances.Add(i, m_UnusedStoneInstances[0]);
+					m_UnusedStoneInstances.RemoveAt(0);
+					m_PoolStoneInstances[i].gameObject.SetActive(true);
+					m_PoolStoneInstances[i].transform.SetParent(PoolPositions[i], false);
+					m_PoolStoneInstances[i].Stone = m_Game.Pool[i];
 				}
-				else if(Game.GetStoneInPoolAt(i) != Game.EStone.NONE && PoolStoneInstances.ContainsKey(i))
+				else if(m_Game.GetStoneInPoolAt(i) != Game.EStone.None && m_PoolStoneInstances.ContainsKey(i))
 				{
-					PoolStoneInstances[i].Stone = Game.Pool[i];
-					PoolStoneInstances[i].IsFromThePool = true;
+					m_PoolStoneInstances[i].Stone = m_Game.Pool[i];
+					m_PoolStoneInstances[i].IsFromThePool = true;
 				}
 			}
 		}

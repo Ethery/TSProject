@@ -48,15 +48,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 965609bf4df38054a919dd6ba329870a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Textures:
-  - {fileID: 2800000, guid: aac1e1377aee8c5409a6e31c8837eb93, type: 3}
-  - {fileID: 2800000, guid: 1e8b94e4fc646e0499ae95df99c97959, type: 3}
-  - {fileID: 2800000, guid: 5ddacb26bdfeacc4b8cdb70f35aece09, type: 3}
-  - {fileID: 2800000, guid: 7dd75a153d35f294a9977b9943b6e81b, type: 3}
-  - {fileID: 2800000, guid: 1691bfb6a5463e6438dbbb5503403afd, type: 3}
-  - {fileID: 2800000, guid: 2676ca5caf0bdeb4a9875f694e417764, type: 3}
-  - {fileID: 2800000, guid: 933a6cbd06f15504fa81cbea6194bf34, type: 3}
-  - {fileID: 2800000, guid: 5fa2eff429a573a4dac3fbc0466a8e2e, type: 3}
+  DataSet: {fileID: 11400000, guid: e21c6a69c02ef254ab098257ffbf18bd, type: 2}
   Animator: {fileID: 1612616783980539310}
   IsFromThePool: 0
 --- !u!114 &1170287755191809911

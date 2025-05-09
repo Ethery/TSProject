@@ -1,17 +1,14 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Globalization;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Assertions;
+using Random = UnityEngine.Random;
 
 public class Game
 {
 	public sealed class Stone
 	{
-		public EStone Value = 0;
-		public bool Hidden = false;
+		public readonly EStone Value;
+		public bool Hidden;
 
 		public Stone(EStone aValue, bool aHidden)
 		{
@@ -22,15 +19,18 @@ public class Game
 
 	public enum EStone
 	{
-		NONE = 0,
-		Crown = 1,
-		Flag,
-		Hammer,
-		Knight,
-		Scales,
-		Shield,
-		Sword,
+		None = -1,
+		Crown = 0,
+		Flag = 1,
+		Hammer = 2,
+		Knight = 3,
+		Scales = 4,
+		Shield = 5,
+		Sword = 6,
+		Count = 7,
 	}
+
+	public static readonly EStone[] ALL = new EStone[]{ EStone.Crown, EStone.Flag, EStone.Hammer, EStone.Knight, EStone.Scales, EStone.Shield, EStone.Sword };
 
 	public enum EGameAction
 	{
@@ -43,157 +43,155 @@ public class Game
 		Boast,
 	}
 
-	public Stone[] Line = new Stone[7];
-	public Stone[] Pool = new Stone[7];
-	public int[] PlayerPoints = new int [2]{ 0, 0 };
+	#region Running Game datas
 
+	private readonly Stone[] m_Line;
+	private readonly Stone[] m_Pool;
+	private readonly int[] m_PlayerPoints;
+	
 	public EGameAction? CurrentRunningAction = null;
+	public int CurrentPlayer = 0;
 
+	public Stone[] Line => m_Line;
+	public Stone[] Pool => m_Pool;
+	
+	#endregion
+	
 	public Game()
 	{
-		Line = new Stone[7];
-		Pool = new Stone[7];
-		Array stones = Enum.GetValues(typeof(EStone));
+		m_Line = new Stone[(int)EStone.Count];
+		m_Pool = new Stone[(int)EStone.Count];
 
-		for (int i = 1; i < stones.Length; i++)
+		int stoneIdToPlace = Random.Range(0, (int)EStone.Count);
+		
+		for (int i = 0; i < (int)EStone.Count; i++)
 		{
-			Pool[i-1] = new Stone((EStone)stones.GetValue(i),false);
-			Line[i-1] = null;
+			m_Line[i] = null;
+			if (stoneIdToPlace != i)
+			{
+				m_Pool[i] = new Stone((EStone)i, false);
+			}
 		}
+		
+		m_Line[3] = new Stone((EStone)stoneIdToPlace, false);
 
-		int stoneIdToPlace = UnityEngine.Random.Range(1, 8);
+		m_PlayerPoints = new[] { 0, 0 };
 
-		Line[3] = new Stone((EStone)stoneIdToPlace, false);
-
-		RemoveStoneFromPool((EStone)stoneIdToPlace);
-
-		PlayerPoints = new int[2] { 0, 0 };
+		Debug.Log(ToString());
 	}
-
-	public EStone GetStoneInLineAt(int id)
-	{
-		if (Line[id] == null)
-			return EStone.NONE;
-		return Line[id].Value;
-	}
-	public EStone GetStoneInPoolAt(int id)
-	{
-		if (Pool[id] == null)
-			return EStone.NONE;
-		return Pool[id].Value;
-	}
-
+	
 	#region Actions
 
 	/// <summary>
 	/// Will place a stone on the line before or after the stones already on it.
 	/// </summary>
-	/// <param name="stoneToPlace">stonetype to place</param>
-	/// <param name="before">will the stone be placed Before(true) or After(false) the other stones.</param>
-	public void PlaceStone(EStone stoneToPlace,bool before)
+	/// <param name="aStoneToPlace">stonetype to place</param>
+	/// <param name="aBefore">will the stone be placed Before(true) or After(false) the other stones.</param>
+	public void PlaceStone(EStone aStoneToPlace,bool aBefore)
 	{
-		if (before)
+		if (aBefore)
 		{
 			//if the first index is not empty we move it up to free the space.
-			if (Line[0] != null)
+			if (m_Line[0] != null)
 			{
-				MoveStoneInLineNoLoss(0, up: true);
+				MoveStoneInLineNoLoss(0, aUp: true);
 			}
 
 		}
 		else
 		{
 			//if the last index is not empty we move it down to free the space.
-			if (Line[Line.Length - 1] != null)
+			if (m_Line[^1] != null)
 			{
-				MoveStoneInLineNoLoss(Line.Length - 1, up: false);
+				MoveStoneInLineNoLoss(m_Line.Length - 1, aUp: false);
 			}
 		}
 
-		int i = before ? 0 : Line.Length - 1;
-		int end = before ? Line.Length : -1;
-		int step = before ? 1 : -1;
+		int i = aBefore ? 0 : m_Line.Length - 1;
+		int end = aBefore ? m_Line.Length : -1;
+		int step = aBefore ? 1 : -1;
 
 		for (; i != end; i += step)
 		{		
 			//looping either way to find the first "not empty slot" in the line
-			if (Line[i] != null)
+			if (m_Line[i] != null)
 			{
 				//and assigning the previous one the new value.
-				Line[i - step] = new Stone(stoneToPlace, false);
-				Debug.Log($"Placed {stoneToPlace} {(before ? "before" : "after")} the line");
-				RemoveStoneFromPool(stoneToPlace);
+				m_Line[i - step] = new Stone(aStoneToPlace, false);
+				Debug.Log($"Placed {aStoneToPlace} {(aBefore ? "before" : "after")} the line");
+				RemoveStoneFromPool(aStoneToPlace);
 				return;
 			}
 		}
 
 
-		Debug.LogError($"Couldn't place {stoneToPlace} {(before ? "before" : "after")} the line");
+		Debug.LogError($"Couldn't place {aStoneToPlace} {(aBefore ? "before" : "after")} the line");
 	}
 
-	public void HideStone(int stoneToHide)
+	public void HideStone(int aStoneToHide)
 	{
-		Assert.IsTrue(0 <= stoneToHide && stoneToHide <= Line.Length - 1);
-		Assert.IsTrue(Line[stoneToHide] != null);
+		Assert.IsTrue(0 <= aStoneToHide && aStoneToHide <= m_Line.Length - 1);
+		Assert.IsTrue(m_Line[aStoneToHide] != null);
 		
-		Line[stoneToHide].Hidden = !Line[stoneToHide].Hidden;
-		Debug.Log($"{(Line[stoneToHide].Hidden ? "Hidden" : "Shown")} {Line[stoneToHide].Value}");
+		m_Line[aStoneToHide].Hidden = !m_Line[aStoneToHide].Hidden;
+		Debug.Log($"{(m_Line[aStoneToHide].Hidden ? "Hidden" : "Shown")} {m_Line[aStoneToHide].Value}");
 	}
 
-	public void HideStone(EStone stoneToHide)
+	public void HideStone(EStone aStoneToHide)
 	{
-		for(int i = 0;i <Line.Length;i++)
+		for(int i = 0;i <m_Line.Length;i++)
 		{
-			if (Line[i] != null)
+			if (m_Line[i] == null)
+				continue;
+			
+			if (m_Line[i].Value == aStoneToHide)
 			{
-				if (Line[i].Value == stoneToHide)
-				{
-					HideStone(i);
-				}
+				HideStone(i);
 			}
 		}
 	}
 
-	public void SwapStones(int indexFrom, int indexTo)
+	public void SwapStones(int aIndexFrom, int aIndexTo)
 	{
-		Stone stoneTo = Line[indexTo];
-		Line[indexTo] = Line[indexFrom];
-		Line[indexFrom] = stoneTo;
+		// ReSharper disable once SwapViaDeconstruction for Clarity
+		Stone stoneTo = m_Line[aIndexTo];
+		m_Line[aIndexTo] = m_Line[aIndexFrom];
+		m_Line[aIndexFrom] = stoneTo;
 	}
 	
-	public void SwapStones(EStone stoneFromValue, EStone stoneToValue)
+	public void SwapStones(EStone aStoneFromValue, EStone aStoneToValue)
 	{
-		int fromIndex = GetStoneIndexInLine(stoneFromValue);
-		int toIndex = GetStoneIndexInLine(stoneToValue);
+		int fromIndex = GetStoneIndexInLine(aStoneFromValue);
+		int toIndex = GetStoneIndexInLine(aStoneToValue);
 		SwapStones(fromIndex,toIndex);
 	}
 
-	public Stone WatchStone(int index)
+	public Stone WatchStone(int aIndex)
 	{
-		Assert.IsTrue(0 > index && index > Line.Length - 1);
-		Assert.IsTrue(Line[index] != null);
+		Assert.IsTrue(0 < aIndex && aIndex < m_Line.Length - 1);
+		Assert.IsTrue(m_Line[aIndex] != null);
 
-		return Line[index];
+		return m_Line[aIndex];
 	}
 
-	public Stone WatchStone(EStone stoneToSee)
+	public Stone WatchStone(EStone aStoneToSee)
 	{
-		for (int i = 0; i < Line.Length; i++)
+		for (int i = 0; i < m_Line.Length; i++)
 		{
-			if (Line[i] != null)
+			if (m_Line[i] != null)
 			{
-				if (Line[i].Value == stoneToSee)
+				if (m_Line[i].Value == aStoneToSee)
 				{
-					return Line[i];
+					return m_Line[i];
 				}
 			}
 		}
 		return null;
 	}
 
-	public void Defy(int aAskingPlayerId, int aAnsweringPlayerId,Stone stoneToGuess, EStone aGuess )
+	public void Defy(int aAskingPlayerId, int aAnsweringPlayerId,Stone aStoneToGuess, EStone aGuess )
 	{
-		if (stoneToGuess.Value == aGuess)
+		if (aStoneToGuess.Value == aGuess)
 		{
 			AddPointsToPlayer(aAnsweringPlayerId);
 		}
@@ -211,15 +209,11 @@ public class Game
 	/// <returns>True if the guess is correct. False otherwise.</returns>
 	public bool CheckBoast(int aBoastingPlayerId, EStone[] aGuess)
 	{
-		for(int i = 0;i< Line.Length;i++)
+		for(int i = 0;i< m_Line.Length;i++)
 		{
-			if (Line[i] == null && aGuess[i] == EStone.NONE)
+			if (m_Line[i] != null && aGuess[i] != EStone.None)
 			{
-				continue;
-			}
-			else if (Line[i] != null && aGuess[i] != EStone.NONE)
-			{
-				if (aGuess[i] != Line[i].Value)
+				if (aGuess[i] != m_Line[i].Value)
 				{
 					return false;
 				}
@@ -234,13 +228,41 @@ public class Game
 
 	#endregion
 
-	#region Helpers
+	#region public Helpers
 
-	private int GetStoneIndexInLine(EStone stone)
+	public int GetPointsOfPlayer(int aPlayerId)
 	{
-		for (int i = 0; i < Line.Length; i++)
+		if (aPlayerId >= 0 && aPlayerId < m_PlayerPoints.Length)
 		{
-			if (Line[i] != null && Line[i].Value == stone)
+			return m_PlayerPoints[aPlayerId];
+		}
+		Debug.LogError($"Player {aPlayerId} is not in the players list");
+		return -1;
+	}
+	
+	public EStone GetStoneInLineAt(int aID)
+	{
+		if (m_Line[aID] == null)
+			return EStone.None;
+		return m_Line[aID].Value;
+	}
+	
+	public EStone GetStoneInPoolAt(int aID)
+	{
+		if (m_Pool[aID] == null)
+			return EStone.None;
+		return m_Pool[aID].Value;
+	}
+
+	#endregion
+	
+	#region private Helpers
+	
+	private int GetStoneIndexInLine(EStone aStone)
+	{
+		for (int i = 0; i < m_Line.Length; i++)
+		{
+			if (m_Line[i] != null && m_Line[i].Value == aStone)
 			{
 				return i;
 			}
@@ -248,11 +270,11 @@ public class Game
 		return -1;
 	}
 
-	private int GetStoneIndexInPool(EStone stone)
+	private int GetStoneIndexInPool(EStone aStone)
 	{
-		for (int i = 0; i < Pool.Length; i++)
+		for (int i = 0; i < m_Pool.Length; i++)
 		{
-			if (Pool[i] != null && Pool[i].Value == stone)
+			if (m_Pool[i] != null && m_Pool[i].Value == aStone)
 			{
 				return i;
 			}
@@ -260,48 +282,77 @@ public class Game
 		return -1;
 	}
 
-	public void RemoveStoneFromPool(EStone stone)
+	private void RemoveStoneFromPool(EStone aStone)
 	{
-		for(int i = 0; i < Pool.Length;i++)
+		for(int i = 0; i < m_Pool.Length;i++)
 		{
-			if (Pool[i] != null && Pool[i].Value == stone)
+			if (m_Pool[i] != null && m_Pool[i].Value == aStone)
 			{
-				Pool[i] = null;
+				m_Pool[i] = null;
 			}
 		}
 	}
 
-	public void AddPointsToPlayer(int aPlayerIndex,int aPointsToAdd = 1)
+	private void AddPointsToPlayer(int aPlayerIndex,int aPointsToAdd = 1)
 	{
-		PlayerPoints[aPlayerIndex] += aPointsToAdd;
+		m_PlayerPoints[aPlayerIndex] += aPointsToAdd;
 	}
 
 	/// <summary>
 	/// move a stone from source index and either up or down the line.
 	/// </summary>
-	/// <param name="sourceIndex"></param>
-	/// <param name="up"></param>
-	private void MoveStoneInLineNoLoss(int sourceIndex, bool up)
+	/// <param name="aSourceIndex"></param>
+	/// <param name="aUp"></param>
+	private void MoveStoneInLineNoLoss(int aSourceIndex, bool aUp)
 	{
-		int targetIndex = sourceIndex + (up ? 1:-1);
+		int targetIndex = aSourceIndex + (aUp ? 1:-1);
 
 		//If this happens the line is not big enough OR already filled up. (or something went wrong earlier)
-		Assert.IsFalse(sourceIndex > Line.Length, $"Can't move stone from index {sourceIndex} to {targetIndex}");
+		Assert.IsFalse(aSourceIndex > m_Line.Length, $"Can't move stone from index {aSourceIndex} to {targetIndex}");
 
 		//if target is occupied we move in the same direction the next stone.
-		if (Line[targetIndex] != null)
+		if (m_Line[targetIndex] != null)
 		{
-			Debug.Log($"Move stone from {sourceIndex} to  {targetIndex}");
+			Debug.Log($"Move stone from {aSourceIndex} to  {targetIndex}");
 			//Not checking newTargetIndex since it will be checked at the beggining of the next call to MoveStoneInLineNoLoss.
-			MoveStoneInLineNoLoss(targetIndex, up);
+			MoveStoneInLineNoLoss(targetIndex, aUp);
 		}
 
 		//From there the line[targetIndex] have been moved so we can move properly.
-		Stone stone = Line[sourceIndex];
+		Stone stone = m_Line[aSourceIndex];
 
-		Line[targetIndex] = stone;
-		Line[sourceIndex] = null;
+		m_Line[targetIndex] = stone;
+		m_Line[aSourceIndex] = null;
 	}
 
 	#endregion
+
+	public override string ToString()
+	{
+		string printInitResult = "Line:\n";
+		foreach (Stone stone in m_Line)
+		{
+			if (stone != null)
+			{
+				printInitResult += $"\t{stone.Value}\n";
+			}
+			else
+			{
+				printInitResult += "\tNULL\n";
+			}
+		}
+		printInitResult += "Pool:\n";
+		foreach (Stone stone in m_Pool)
+		{
+			if (stone != null)
+			{
+				printInitResult += $"\t{stone.Value}\n";
+			}
+			else
+			{
+				printInitResult += "\tNULL\n";
+			}
+		}
+		return printInitResult;
+	}
 }

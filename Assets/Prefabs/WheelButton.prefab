@@ -128,6 +128,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Image: {fileID: 1407418883974413458}
+  VisualDataSet: {fileID: 11400000, guid: e21c6a69c02ef254ab098257ffbf18bd, type: 2}
 --- !u!222 &4478983288331046784
 CanvasRenderer:
   m_ObjectHideFlags: 0

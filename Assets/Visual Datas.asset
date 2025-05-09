@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 434e48ec11ba618468e3d3ba76bee21c, type: 3}
+  m_Name: Visual Datas
+  m_EditorClassIdentifier: 
+  Sprites:
+    DataList:
+    - Stone: 0
+      Value: {fileID: 21300000, guid: b174aad58f2947546a2784528bef1c97, type: 3}
+    - Stone: 1
+      Value: {fileID: 21300000, guid: 00271f056f419be469025e9a8e9cddc2, type: 3}
+    - Stone: 2
+      Value: {fileID: 21300000, guid: 6d6e68a3da2086f498f377f6b037a694, type: 3}
+    - Stone: 3
+      Value: {fileID: 21300000, guid: 457b33f773e1a864bb7d5c4757fa07ce, type: 3}
+    - Stone: 4
+      Value: {fileID: 21300000, guid: 2822556bb51c55c4289fdc3cf6e0c653, type: 3}
+    - Stone: 5
+      Value: {fileID: 21300000, guid: e73ce8e0c4c6cab479ce4fe14142db50, type: 3}
+    - Stone: 6
+      Value: {fileID: 21300000, guid: 85c8e21268087ae42b229c620e83866c, type: 3}
+    - Stone: -1
+      Value: {fileID: 0}
+  Textures:
+    DataList:
+    - Stone: 0
+      Value: {fileID: 2800000, guid: 1e8b94e4fc646e0499ae95df99c97959, type: 3}
+    - Stone: 1
+      Value: {fileID: 2800000, guid: 5ddacb26bdfeacc4b8cdb70f35aece09, type: 3}
+    - Stone: 2
+      Value: {fileID: 2800000, guid: 7dd75a153d35f294a9977b9943b6e81b, type: 3}
+    - Stone: 3
+      Value: {fileID: 2800000, guid: 1691bfb6a5463e6438dbbb5503403afd, type: 3}
+    - Stone: 4
+      Value: {fileID: 2800000, guid: 2676ca5caf0bdeb4a9875f694e417764, type: 3}
+    - Stone: 5
+      Value: {fileID: 2800000, guid: 933a6cbd06f15504fa81cbea6194bf34, type: 3}
+    - Stone: 6
+      Value: {fileID: 2800000, guid: 5fa2eff429a573a4dac3fbc0466a8e2e, type: 3}
+    - Stone: -1
+      Value: {fileID: 0}

@@ -1,52 +1,58 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class InputProvider : MonoBehaviour
 {
-	public Vector2 MousePosition { get; private set; }
-	public event Action Clicked;
+	private Vector2 m_MousePositionOnScreen;
+	private HoverHandler m_HoveredObject;
 
-	public HoverHandler hoveredObject = null;
-	private void OnMousePosition(InputValue value)
+	public Vector2 MousePositionOnScreen => m_MousePositionOnScreen;
+	public HoverHandler HoveredObject =>  m_HoveredObject;
+	
+	private void OnMousePosition(InputValue aValue)
 	{
-		MousePosition = value.Get<Vector2>();
+		m_MousePositionOnScreen = aValue.Get<Vector2>();
 
-		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-		if (Physics.Raycast(ray, out RaycastHit _hit, 100))
+		if (Camera.main)
 		{
-			if (_hit.transform.TryGetComponent(out HoverHandler _hoverHandler))
+			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+			if (Physics.Raycast(ray, out RaycastHit outHit, 100))
 			{
-				if (hoveredObject != _hit.transform.gameObject)
+				if (outHit.transform.TryGetComponent(out HoverHandler outHoverHandler))
 				{
-					if (hoveredObject != null)
+					if (m_HoveredObject != outHoverHandler)
 					{
-						hoveredObject.OnUnhovered();
+						if (m_HoveredObject)
+						{
+							m_HoveredObject.OnUnhovered();
+						}
+						m_HoveredObject = outHoverHandler;
+						m_HoveredObject.OnHovered();
+						return;
 					}
-					hoveredObject = _hoverHandler;
-					hoveredObject.OnHovered();
-					return;
 				}
 			}
 		}
-		if (hoveredObject != null)
+
+		if (m_HoveredObject)
 		{
-			hoveredObject.OnUnhovered();
-			hoveredObject = null;
+			m_HoveredObject.OnUnhovered();
+			m_HoveredObject = null;
 		}
 
 	}
 
 	private void OnClick(InputValue _)
 	{
-		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-		if (Physics.Raycast(ray, out RaycastHit _hit, 100))
+		if (Camera.main)
 		{
-			if(_hit.transform.TryGetComponent(out ClickHandler _clickHandler))
+			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+			if (Physics.Raycast(ray, out RaycastHit outHit, 100))
 			{
-				_clickHandler.OnClicked();
+				if(outHit.transform.TryGetComponent(out ClickHandler outClickHandler))
+				{
+					outClickHandler.OnClicked();
+				}
 			}
 		}
 	}

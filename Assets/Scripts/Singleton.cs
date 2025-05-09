@@ -1,7 +1,4 @@
 ﻿using UnityEngine;
-//!	@class	Singleton
-//!
-//!	@brief	singleton pattern class implementation for a mono behaviour.
 
 public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 {
@@ -19,13 +16,9 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 	{
 		if (Instance == this)
 		{
-			Debug.Log(string.Format("{0}: destroy", GetType().Name), this);
 			Instance = null;
+			Debug.Log($"Destroyed {GetType().Name}");
 		}
-	}
-
-	protected virtual void OnApplicationQuit()
-	{
 	}
 
 	public void ForceInit()
@@ -34,16 +27,19 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 		{
 			Instance = this as T;
 
-			if (transform.parent == null && Application.isPlaying)
+			if (Application.isPlaying)
 			{
 				DontDestroyOnLoad(this);
 			}
-			Debug.Log(string.Format("{0}: awake", GetType().Name), this);
+
+			InitInstance();
+
+			Debug.Log($"{GetType().Name} Initialized", this);
 		}
 
 		if (Instance != this)
 		{
-			Debug.LogError(string.Format("{0}: already instanced -> destroying {1}", GetType().Name, name));
+			Debug.LogError($"{GetType().Name} is already instanced destroying second instance at {this.gameObject}");
 			Destroy(this);
 		}
 	}

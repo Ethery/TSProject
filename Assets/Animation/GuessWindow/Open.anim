@@ -23,29 +23,29 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0
+        value: -900
         inSlope: 0
-        outSlope: 0
-        tangentMode: 136
+        outSlope: 58.2101
+        tangentMode: 1
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 0.33333334
+        outWeight: 0.1392904
       - serializedVersion: 3
         time: 0.41666666
-        value: 56.37
-        inSlope: 0
+        value: -200
+        inSlope: 873.33057
         outSlope: 0
-        tangentMode: 136
+        tangentMode: 1
         weightedMode: 0
-        inWeight: 0.33333334
+        inWeight: 0.03416556
         outWeight: 0.33333334
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: DistanceToCenter
+    attribute: m_SizeDelta.y
     path: 
-    classID: 114
-    script: {fileID: 11500000, guid: 77c8334779f4ec64fbc6b2fd0a04ea75, type: 3}
+    classID: 224
+    script: {fileID: 0}
     flags: 0
   m_PPtrCurves: []
   m_SampleRate: 60
@@ -57,10 +57,10 @@ AnimationClip:
     genericBindings:
     - serializedVersion: 2
       path: 0
-      attribute: 159796072
-      script: {fileID: 11500000, guid: 77c8334779f4ec64fbc6b2fd0a04ea75, type: 3}
-      typeID: 114
-      customType: 0
+      attribute: 38095219
+      script: {fileID: 0}
+      typeID: 224
+      customType: 28
       isPPtrCurve: 0
       isIntCurve: 0
       isSerializeReferenceCurve: 0
@@ -92,29 +92,29 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0
+        value: -900
         inSlope: 0
-        outSlope: 0
-        tangentMode: 136
+        outSlope: 58.2101
+        tangentMode: 1
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 0.33333334
+        outWeight: 0.1392904
       - serializedVersion: 3
         time: 0.41666666
-        value: 56.37
-        inSlope: 0
+        value: -200
+        inSlope: 873.33057
         outSlope: 0
-        tangentMode: 136
+        tangentMode: 1
         weightedMode: 0
-        inWeight: 0.33333334
+        inWeight: 0.03416556
         outWeight: 0.33333334
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: DistanceToCenter
+    attribute: m_SizeDelta.y
     path: 
-    classID: 114
-    script: {fileID: 11500000, guid: 77c8334779f4ec64fbc6b2fd0a04ea75, type: 3}
+    classID: 224
+    script: {fileID: 0}
     flags: 0
   m_EulerEditorCurves: []
   m_HasGenericRootTransform: 0

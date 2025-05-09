@@ -4,3 +4,8 @@
 /Library/*
 /obj/
 /Logs/
+.idea
+/Temp/*
+/UserSettings/*
+*.sln
+*DotSettings.user

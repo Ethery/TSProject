@@ -1,31 +1,41 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 
 [RequireComponent(typeof(Collider))]
 public class StoneObject : MonoBehaviour
 {
-	[SerializeField]
-	private List<Texture> Textures;
+	[SerializeField] private VisualDataSet DataSet;
 
-	[SerializeField]
-	private Animator Animator;
+	[SerializeField] private Animator Animator;
 
 	public bool IsFromThePool;
 
-	public Game.Stone m_stone;
+	private Game.Stone m_Stone;
+	private Renderer[] m_Renderers;
 
-	private static StoneObject stoneToSwap;
+	private static StoneObject _stoneToSwap;
+	
+	#region Animator Parameters
+	
+	private const string HiddenAnimParam = "Hidden";
+	private const string SelectedAnimParam = "Selected";
+	private const string HoveredAnimParam = "Hovered";
 
+	#endregion
+	
 	public Game.Stone Stone
 	{
-		get => m_stone;
+		get => m_Stone;
 		set
 		{
-			m_stone = value;
+			m_Stone = value;
 		}
+	}
+
+	private void Start()
+	{
+		m_Renderers = GetComponentsInChildren<Renderer>();
 	}
 
 	private void Update()
@@ -35,35 +45,38 @@ public class StoneObject : MonoBehaviour
 			ApplyType(Stone.Value);
 			if (Animator != null)
 			{
-				Animator.SetBool("Hidden", Stone.Hidden);
+				Animator.SetBool(HiddenAnimParam, Stone.Hidden);
+				Animator.SetBool(SelectedAnimParam, _stoneToSwap == this);
 			}
-			Animator.SetBool("Selected", stoneToSwap == this);
 		}
 	}
 
-	private void ApplyType(Game.EStone stoneType)
+	private void ApplyType(Game.EStone aStoneType)
 	{
-		foreach (Renderer renderer in GetComponentsInChildren<Renderer>())
+		foreach (Renderer renderer in m_Renderers)
 		{
-			renderer.material.mainTexture = Textures[(int)stoneType];
+			renderer.material.mainTexture = DataSet.Textures[aStoneType];
 		}
 	}
 
 	public void OnHovered()
 	{
-		Animator.SetBool("Hovered", true);
+		if (GameManager.Instance.Game.CurrentRunningAction.HasValue
+		    && GameManager.Instance.Game.CurrentRunningAction != Game.EGameAction.Boast)
+		{
+			Animator.SetBool(HoveredAnimParam, true);
+		}
 	}
 
 	public void OnUnHovered()
 	{
-		Animator.SetBool("Hovered", false);
+		Animator.SetBool(HoveredAnimParam, false);
 	}
 
 	public void OnClicked()
 	{
 		if (GameManager.Instance.Game.CurrentRunningAction.HasValue)
 		{
-			bool placeBefore = false;
 			switch (GameManager.Instance.Game.CurrentRunningAction)
 			{
 				case Game.EGameAction.PlaceStoneBefore:
@@ -94,16 +107,16 @@ public class StoneObject : MonoBehaviour
 					{
 						if (!this.IsFromThePool && GameManager.Instance.Game.Line.Length >= 2)
 						{
-							if (stoneToSwap == null)
+							if (_stoneToSwap == null)
 							{
-								stoneToSwap = this;
-								Debug.Log($"Setting swap stone to {stoneToSwap.Stone.Value}");
+								_stoneToSwap = this;
+								Debug.Log($"Setting swap stone to {_stoneToSwap.Stone.Value}");
 							}
 							else
 							{
-								Debug.Log($"Swapping {stoneToSwap.Stone.Value} to {this.Stone.Value}");
-								GameManager.Instance.Game.SwapStones(stoneToSwap.Stone.Value, this.Stone.Value);
-								stoneToSwap = null;
+								Debug.Log($"Swapping {_stoneToSwap.Stone.Value} to {this.Stone.Value}");
+								GameManager.Instance.Game.SwapStones(_stoneToSwap.Stone.Value, this.Stone.Value);
+								_stoneToSwap = null;
 							}
 						}
 						break;
@@ -113,7 +126,7 @@ public class StoneObject : MonoBehaviour
 						StartCoroutine(WatchCoroutine());
 					break;
 				case Game.EGameAction.Defy:
-					GameManager.Instance.Selector.AskForSelection(Guess);
+					GameManager.Instance.Selector.AskForSelection(Game.ALL,Guess);
 					break;
 				case Game.EGameAction.Boast:
 					break;
@@ -121,9 +134,9 @@ public class StoneObject : MonoBehaviour
 		}
 	}
 
-	private void Guess(Game.EStone stone)
+	private void Guess(Game.EStone aStone)
 	{
-		GameManager.Instance.Game.Defy(0, 1, this.Stone, stone);
+		GameManager.Instance.Game.Defy(0, 1, this.Stone, aStone);
 		GameManager.Instance.Selector.gameObject.SetActive(false);
 	}
 
