@@ -74,7 +74,7 @@ public class GameActionSelector : MonoBehaviour
 		switch (GameManager.Instance.Game.CurrentRunningAction)
 		{
 			case Game.EGameAction.Boast:
-				GameManager.Instance.AskBoast();
+				GameManager.Instance.ConfrontBoast();
 				break;
 		}
 	}

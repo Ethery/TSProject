@@ -55,6 +55,7 @@ public class Game
 	public EGameAction? CurrentRunningAction = null;
 	public int NumberOfPlayers => m_NumberOfPlayers;
 	public int CurrentPlayer => m_CurrentPlayer;
+	public int NextPlayer => (m_CurrentPlayer + 1) % m_NumberOfPlayers;
 	public Stone[] Line => m_Line;
 	public Stone[] Pool => m_Pool;
 	
@@ -88,7 +89,7 @@ public class Game
 	public void GoToNextPlayer()
 	{
 		CurrentRunningAction = null;
-		m_CurrentPlayer = (CurrentPlayer + 1) % m_NumberOfPlayers;
+		m_CurrentPlayer = NextPlayer;
 	}
 	
 	/// <summary>
@@ -267,6 +268,11 @@ public class Game
 
 	#region public Helpers
 
+	public void AddPointsToPlayer(int aPlayerIndex,int aPointsToAdd = 1)
+	{
+		m_PlayerPoints[aPlayerIndex] += aPointsToAdd;
+	}
+
 	public int GetPointsOfPlayer(int aPlayerId)
 	{
 		if (aPlayerId >= 0 && aPlayerId < m_PlayerPoints.Length)
@@ -328,11 +334,6 @@ public class Game
 				m_Pool[i] = null;
 			}
 		}
-	}
-
-	public void AddPointsToPlayer(int aPlayerIndex,int aPointsToAdd = 1)
-	{
-		m_PlayerPoints[aPlayerIndex] += aPointsToAdd;
 	}
 
 	/// <summary>

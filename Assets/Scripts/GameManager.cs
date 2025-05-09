@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -11,9 +12,20 @@ public class GameManager : Singleton<GameManager>
 	[SerializeField] private Transform[] LinePositions;
 	[SerializeField] private Transform[] PoolPositions;
 	
-	[SerializeField] public SelectorWheel Selector;
+	[SerializeField] public SelectorWheel StoneSelector;
+	[SerializeField] public BoastActionSelector BoastSelector;
 
-	public bool IsWatching;
+	[NonSerialized] public bool IsWatching;
+	
+	#region Boasting
+	
+	[NonSerialized] public bool IsBoasting = false;
+	[NonSerialized] public Game.EStone? BoastingStone;
+
+	[NonSerialized] public List<Game.EStone> BoastedStones;
+	
+	#endregion
+	
 	private Game m_Game;
 	
 	private Dictionary<int, StoneObject> m_LineStoneInstances;
@@ -70,7 +82,8 @@ public class GameManager : Singleton<GameManager>
 			m_UnusedStoneInstances.Add(Instantiate(StonePrefab, transform));
 			m_UnusedStoneInstances[i].gameObject.SetActive(false);
 		}
-		Selector.gameObject.SetActive(false);
+		StoneSelector.gameObject.SetActive(false);
+		BoastSelector.gameObject.SetActive(false);
 	}
 
 	public void Update()
@@ -129,14 +142,16 @@ public class GameManager : Singleton<GameManager>
 
 	#region Boasting Action
 	
-	public Game.EStone? BoastingStone;
-	public bool IsBoasting = false;
-
-	public List<Game.EStone> BoastedStones;
+	public void ConfrontBoast(bool isFirstTime = true)
+	{
+		m_Game.GoToNextPlayer();
+		BoastSelector.SelectAction(isFirstTime);
+		IsBoasting = true;
+	}
+	
 	public void AskBoast()
 	{
 		BoastedStones = new List<Game.EStone>();
-		IsBoasting = true;
 		BoastingStone = null;
 		List<Game.EStone> selection =  new List<Game.EStone>();
 		foreach (Game.Stone stone in m_Game.Line)
@@ -156,13 +171,13 @@ public class GameManager : Singleton<GameManager>
 			return;
 		}
 		
-		Selector.AskForSelection(selection.ToArray(),DoNextBoast);
+		StoneSelector.AskForSelection(selection.ToArray(),DoNextBoast);
 	}
 
 	public void DoNextBoast(Game.EStone lastAnswer)
 	{
 		BoastingStone = lastAnswer;
-		Selector.gameObject.SetActive(false);
+		StoneSelector.gameObject.SetActive(false);
 	}
 	
 	#endregion

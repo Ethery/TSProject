@@ -126,7 +126,7 @@ public class StoneObject : MonoBehaviour
 						StartCoroutine(WatchCoroutine());
 					break;
 				case Game.EGameAction.Defy:
-					GameManager.Instance.Selector.AskForSelection(Game.ALL,Guess);
+					GameManager.Instance.StoneSelector.AskForSelection(Game.ALL,Guess);
 					break;
 				case Game.EGameAction.Boast:
 					if (GameManager.Instance.IsBoasting && GameManager.Instance.BoastingStone.HasValue)
@@ -139,7 +139,7 @@ public class StoneObject : MonoBehaviour
 						}
 						else
 						{
-							GameManager.Instance.Game.AddPointsToPlayer((GameManager.Instance.Game.CurrentPlayer+1)%GameManager.Instance.Game.NumberOfPlayers,3);
+							GameManager.Instance.Game.AddPointsToPlayer(GameManager.Instance.Game.NextPlayer,3);
 						}
 					}
 					break;
@@ -150,7 +150,7 @@ public class StoneObject : MonoBehaviour
 	private void Guess(Game.EStone aStone)
 	{
 		GameManager.Instance.Game.Defy(GameManager.Instance.Game.CurrentPlayer, this.Stone, aStone);
-		GameManager.Instance.Selector.gameObject.SetActive(false);
+		GameManager.Instance.StoneSelector.gameObject.SetActive(false);
 	}
 
 	public IEnumerator WatchCoroutine()
