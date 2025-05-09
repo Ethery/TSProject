@@ -144,7 +144,7 @@ public class GameManager : Singleton<GameManager>
 	
 	public void ConfrontBoast(bool isFirstTime = true)
 	{
-		m_Game.GoToNextPlayer();
+		m_Game.GoToNextPlayer(false);
 		BoastSelector.SelectAction(isFirstTime);
 		IsBoasting = true;
 	}

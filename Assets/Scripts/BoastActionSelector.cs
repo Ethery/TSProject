@@ -18,6 +18,7 @@ public class BoastActionSelector : MonoBehaviour
     
     public void Believe()
     {
+        gameObject.SetActive(false);
         GameManager.Instance.Game.AddPointsToPlayer(GameManager.Instance.Game.NextPlayer, 1);
         GameManager.Instance.IsBoasting = false;
         GameManager.Instance.Game.GoToNextPlayer();
@@ -25,12 +26,14 @@ public class BoastActionSelector : MonoBehaviour
 
     public void DontBelieve()
     {
+        gameObject.SetActive(false);
         GameManager.Instance.AskBoast();
     }
 
     public void DontCare()
     {
-        if(m_IsFirstTime)
-            GameManager.Instance.ConfrontBoast();
+        gameObject.SetActive(false);
+        if (m_IsFirstTime)
+            GameManager.Instance.ConfrontBoast(false);
     }
 }

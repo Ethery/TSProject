@@ -86,9 +86,12 @@ public class Game
 	}
 	
 	#region Actions
-	public void GoToNextPlayer()
+	public void GoToNextPlayer(bool DisableCurrentAction = true)
 	{
-		CurrentRunningAction = null;
+		if (DisableCurrentAction)
+		{
+			CurrentRunningAction = null;
+		}
 		m_CurrentPlayer = NextPlayer;
 	}
 	
