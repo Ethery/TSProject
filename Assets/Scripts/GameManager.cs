@@ -171,7 +171,7 @@ public class GameManager : Singleton<GameManager>
 			return;
 		}
 		
-		StoneSelector.AskForSelection(selection.ToArray(),DoNextBoast);
+		StoneSelector.AskForSelection(selection.ToArray(), aShuffle:true, DoNextBoast);
 	}
 
 	public void DoNextBoast(Game.EStone lastAnswer)

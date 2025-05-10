@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
 using static Game;
@@ -23,8 +24,12 @@ public class SelectorWheel : MonoBehaviour
 	private float m_DistanceToCenter;
 	private float m_MinBetweenHeightAndWidth;
 	
-	public void AskForSelection(EStone[] aSelection, Action<Game.EStone> aCallback)
+	public void AskForSelection(EStone[] aSelection, bool aShuffle, Action<Game.EStone> aCallback)
 	{
+		if (aShuffle)
+		{
+			aSelection.Shuffle();
+		}
 		InitSelection(aSelection);
 		foreach(WheelButton button in Buttons)
 		{

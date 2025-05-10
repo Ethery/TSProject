@@ -126,7 +126,7 @@ public class StoneObject : MonoBehaviour
 						StartCoroutine(WatchCoroutine());
 					break;
 				case Game.EGameAction.Defy:
-					GameManager.Instance.StoneSelector.AskForSelection(Game.ALL,Guess);
+					GameManager.Instance.StoneSelector.AskForSelection(Game.ALL,aShuffle: true,Guess);
 					break;
 				case Game.EGameAction.Boast:
 					if (GameManager.Instance.IsBoasting && GameManager.Instance.BoastingStone.HasValue)

@@ -27,6 +27,7 @@ public class BoastActionSelector : MonoBehaviour
     public void DontBelieve()
     {
         gameObject.SetActive(false);
+        GameManager.Instance.Game.GoToNextPlayer(); 
         GameManager.Instance.AskBoast();
     }
 
